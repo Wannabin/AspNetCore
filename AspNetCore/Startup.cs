@@ -25,6 +25,9 @@ namespace AspNetCore
         {
             services.AddControllersWithViews();
         }
+        // [Request]                    [Response]
+        // [파이프라인]                [파이프라인]
+        //          [마지막 MVC EndPoint]
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // 1) IIS, Apache 등에 HTTP 요청
