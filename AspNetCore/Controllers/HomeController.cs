@@ -37,7 +37,7 @@ namespace AspNetCore.Controllers
     // new RedirectResult() == Redirect()
     // new NotFoundResult() == NotFound()
 
-    //MVC에서 V가 빠지고 [MC]만 사용하면 결국 WebApi
+    //MVC에서 V가 빠지고 [MC]만 사용하면 결국 WebApi 
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
