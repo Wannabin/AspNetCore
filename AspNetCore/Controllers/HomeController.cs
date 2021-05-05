@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace AspNetCore.Controllers
 {
+    #region [MVC] MVC Intro
     // Model (메모리, 파일 , DB등 정보 추출) 재료
     // Controller (데이터 가공, 필터링, 유효성 체크, 서비스 호출) 재료 손질
     // + 각종 서비스 -> 요리
@@ -37,7 +38,8 @@ namespace AspNetCore.Controllers
     // new RedirectResult() == Redirect()
     // new NotFoundResult() == NotFound()
 
-    //MVC에서 V가 빠지고 [MC]만 사용하면 결국 WebApi  
+    //MVC에서 V가 빠지고 [MC]만 사용하면 결국 WebApi
+    #endregion
     #region [M] Model
     // M (Model)
     // 데이터 모델
@@ -122,7 +124,11 @@ namespace AspNetCore.Controllers
     // 하지만 결과에 대해서 어떻게 처리할지는 Action에서 정해야 함.
     // ControllerBase에서 ModelState에 결과를 저장한다.
     #endregion
+    #region[V] View
+    //V (View)
+    // Razor View Page (.cshtml)
 
+    #endregion
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -132,27 +138,27 @@ namespace AspNetCore.Controllers
             _logger = logger;
         }
 
-        public IActionResult Test(int id,[FromHeader] string value)
+        public IActionResult Test()
         {
             return null;
         }
 
-        public IActionResult Test2(TestModel testModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("Error");
-            }
-            return null;
-        }
+        //public IActionResult Test2(TestModel testModel)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return RedirectToAction("Error");
+        //    }
+        //    return null;
+        //}
 
-        // 1) names[0] = Faker&names[1]=Deft
-        // 2) [0] = Faker&[1]=Deft
-        // 3) names=Faker&names=Deft
-        public IActionResult Test3(List<string> names)
-        {
-            return null;
-        }
+        //// 1) names[0] = Faker&names[1]=Deft
+        //// 2) [0] = Faker&[1]=Deft
+        //// 3) names=Faker&names=Deft
+        //public IActionResult Test3(List<string> names)
+        //{
+        //    return null;
+        //}
 
         public IActionResult Index()
         {
