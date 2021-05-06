@@ -127,6 +127,49 @@ namespace AspNetCore.Controllers
     #region[V] View
     //V (View)
     // Razor View Page (.cshtml)
+    // 기본적으로 HTML과 유사한 느낌
+    // HTML은 동적 처리가 애매하다.
+    // - 동적이라 함은 if else 과 분기문 처리라거나
+    // - 특정 리스트 개수에 따라서 <ul><li>이 유동적일때
+    // 따라서 C#을 이용해서 생명을 불어넣겠다!
+    
+    // HTML : 고정 부분 담당 (실제로 클라에 응답을 줄 HTML)
+    // C# : 동적으로 변화하는 부분을 담당
+    // Razor Template 을 만들어 주고,
+    // 이를 Razor Template Engine이 Template를 분석해서, 최종 결과물을 동적을 생성
+
+    // 일반적으로 View에 데이터를 건내주는 역활은 Action에서 한다.
+    // 데이터를 전달하는 방법은 다수 존재
+    // 1) ViewMode( Best)
+    // - 클래스로 만들어서 넘겨주는 방식
+    // 2) ViewData
+    // - Dictionary<string, object>  key/ value 넘기는 방식
+   
+    // ViewModel 그냥 클래스일뿐. 뭔가 특별한것은 아님
+    // 간단한 데이터를 넘긴다면 ViewData로 넘겨도 괜찮다
+    // 실제로 Error 페이지를 살펴보자.
+
+    // Layout, PartialView, _ViewStart
+    // 보통 웹사이트에서는 공통적으로 등장하는 UI가 많다 (ex. Header, Footer)
+    // 심지어 동일한 CSS, Javascript 사용할 가능성도 높음
+    // 공통적인 부분만 따로 빼서 관리하는 Layout
+
+    // Layout도 그냥 Razor Template과 크게 다르진 않다.
+    // 다만 무조건 @RenderBody()를 포함해야 한다
+    // ChildView가 어디에 위치하는지를 지정하는 것
+    // 실제 ChildView의 HTML이 복붙 된다고 보면 됨
+
+    // 그런데 1개의 위치가 아니라, 이리저리 Child를 뿌려주고 싶다면?
+    // RenderSection을 이용해 다른 이름으로 넣어준다.
+
+    // _ViewStart, _ViewImports라는 정체는? -> 그냥 공통적인 부분을 넣어주는 곳
+    // 모든 View마다 어떤 Layout을 적용할지 일일히 코드를 넣어주긴 귀찮다.
+    // 모든 View마다 공통적으로 들어가는 부분 (ex. @using ~~) 일일히 넣어주기 귀찮다...
+    // _ViewStart, _ViewImports를 만들어 주면 -> 해당 폴더 안에 있는 모든 View에 일괄 적용
+
+    // 참고) PartialView라고 반복적으로 등장하는 View
+    // 재사용할 수 있게 만들 수 있는데, 이름 앞에 _를 붙여야 함.
+    // [!]_이 붙으면, _ViewStart가 적용되지 않는다.
 
     #endregion
     public class HomeController : Controller
@@ -140,7 +183,17 @@ namespace AspNetCore.Controllers
 
         public IActionResult Test()
         {
-            return null;
+            TestViewModel testViewModel = new TestViewModel()
+            {
+                Names = new List<string>()
+                {
+                    "Faker", "Deft", "Dopa"
+                }
+            };
+
+            return View(testViewModel);
+            //return View("Privacy");
+            //return View("Views/Shared/Error.cshtm");
         }
 
         //public IActionResult Test2(TestModel testModel)

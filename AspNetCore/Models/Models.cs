@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace AspNetCore.Models
 {
-    public class TestModel
+    //public class TestModel
+    //{
+    //    [Required]
+    //    public int id { get; set; }
+    //    [Required]
+    //    [StringLength(20)]
+    //    public string Name { get; set; }
+    //}
+
+    public class TestViewModel
     {
-        [Required]
-        public int id { get; set; }
-        [Required]
-        [StringLength(20)]
-        public string Name { get; set; }
+        public List<string> Names { get; set; }
     }
 }
