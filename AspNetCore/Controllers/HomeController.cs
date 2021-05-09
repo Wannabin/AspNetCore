@@ -132,7 +132,7 @@ namespace AspNetCore.Controllers
     // - 동적이라 함은 if else 과 분기문 처리라거나
     // - 특정 리스트 개수에 따라서 <ul><li>이 유동적일때
     // 따라서 C#을 이용해서 생명을 불어넣겠다!
-    
+
     // HTML : 고정 부분 담당 (실제로 클라에 응답을 줄 HTML)
     // C# : 동적으로 변화하는 부분을 담당
     // Razor Template 을 만들어 주고,
@@ -144,7 +144,7 @@ namespace AspNetCore.Controllers
     // - 클래스로 만들어서 넘겨주는 방식
     // 2) ViewData
     // - Dictionary<string, object>  key/ value 넘기는 방식
-   
+
     // ViewModel 그냥 클래스일뿐. 뭔가 특별한것은 아님
     // 간단한 데이터를 넘긴다면 ViewData로 넘겨도 괜찮다
     // 실제로 Error 페이지를 살펴보자.
@@ -172,6 +172,23 @@ namespace AspNetCore.Controllers
     // [!]_이 붙으면, _ViewStart가 적용되지 않는다.
 
     #endregion
+
+    #region Tag Helper
+
+    // Tag Helper (일종의 HTML Helper)
+    // 지난 시간에 View에 대해 알아봤는데
+    // 그런데 과연 View만 보여주면 끝일까?
+    // 웹페이지에서 거꾸로 유저가 Submit을 받아서 로직이 이어서 실행이 되어야 함
+
+    // DataModel을 이용해서 유저 요청을 파싱할 수 있다.
+    // 서버 쪽에 데이터가 왔을 때의 처리에 관한 내용
+    // 클라에서 어떤 Controller /Action / 데이터를 보낼것인가?
+
+    // HTML로 손수 다 작성해도 되긴 한다.
+    // Tag-Helper 이용하면 쉽게 처리할 수 있다.
+
+
+    #endregion
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -181,14 +198,22 @@ namespace AspNetCore.Controllers
             _logger = logger;
         }
 
+        public IActionResult BuyItem(int id, int count)
+        {
+            return View();
+        }
+
         public IActionResult Test()
         {
             TestViewModel testViewModel = new TestViewModel()
             {
-                Names = new List<string>()
-                {
-                    "Faker", "Deft", "Dopa"
-                }
+                //Names = new List<string>()
+                //{
+                //    "Faker", "Deft", "Dopa"
+                //}
+
+                Id = 1005,
+                Count = 2
             };
 
             return View(testViewModel);
