@@ -189,6 +189,53 @@ namespace AspNetCore.Controllers
 
 
     #endregion
+
+    #region WebAPI
+    // WebAPI : MVC에서 기능을 조금 제거한게 WebAPI
+    // MVC의 View가 HTML을 반환하지 않고, JSON/XML 데이터를 반환하면
+    // 나머지 Routing, Model Binding, Validation, Response 등 동일!
+
+    // IActionResult 대신 그냥 List<string> 데이터를 반환하면 그게 WebAPI
+    // 이렇게 바로 Data를 반환하면, ApiModel이 적용되어
+    // Asp.NET Core에서 default JSON으로 만들어서 보냄
+
+    // 그렇다고 해서 WebAPI라고 꼭 데이터를 반환해야 한다!는 아님
+    // 삭제 요청 DELETE라면 그냥 상태값( ex. Success 200, Fail 404) 반환
+
+    // ASP.NET (CORE아님) 이전 버전에서는 MVC / WEBAPI 가 분리되어 있었음
+    // ASP.NET CORE 로 넘어오면서 MVC /WebAPI가 동일한 프레임워크를 사용한다.
+    // 몇몇 설정과 반환값만 달라진다!
+    // MVC와 같다...
+
+    // 1) Request
+    // 2) Routing
+    // 3) Model Binding + Validation
+    // 4) Action (<-> Service ApplicationModel)
+    // 5) ViewModel VS ApiModel     //< 여기만 다름, ViewModel 대신 ApiModel4
+    // - View (Razor Template) vs Formatter (어떤 포맷으로? JSON)
+    // 6) Response
+
+    // 물론 WebAPI 프로젝트를 기본적으로 만들면, 기본 설정값들이 살짝 다르긴 하다.
+    // 근데 그건 어디까지 옵션, MVC 방식 설정 WebAPI를 운영해도 무방
+    // 일반적으로 WebAPI에서는 Convention 방식의 Routing (Controller/Action)을 사용하지 않음
+    // Why? REST서버를 생각해보면.
+    // URL 요청 자체가 어떤 기능을 하는지, 이름에서 보다 명확하게 드러나야 좋다! (api/ranking/find)
+    // Attribute Routing !
+    
+    // 매번 중복되는 부분을 제거할 수 없을까?
+    // Route Attribute를 Controller
+    // Action에 붙은 Route / 이 붙으면 절대 경로, 아니면 상대 경로
+
+    // 더 나아가 Controller랑 Action의 이름을 알아서 바꿔치기 해주도록 설정도 가능
+    // [controller][action]
+
+    // 특정 HTTP verb (POST, GET 등)에 대해서만 요청을 받고 싶다면?
+    // [HttpGet] [HttpPost] 사용
+    // [HttpPost("주소")] = [HttpPost] + [Route("주소")]
+
+    #endregion
+    [Route("Home")]
+    //[Route("[controller]")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -198,28 +245,34 @@ namespace AspNetCore.Controllers
             _logger = logger;
         }
 
-        public IActionResult BuyItem(int id, int count)
+        [HttpPost("Post")]
+        public IActionResult PostOnly()
         {
-            return View();
+            return Ok(1);
         }
 
-        public IActionResult Test()
-        {
-            TestViewModel testViewModel = new TestViewModel()
-            {
-                //Names = new List<string>()
-                //{
-                //    "Faker", "Deft", "Dopa"
-                //}
+        //public IActionResult BuyItem(int id, int count)
+        //{
+        //    return View();
+        //}
 
-                Id = 1005,
-                Count = 2
-            };
+        //public IActionResult Test()
+        //{
+        //    TestViewModel testViewModel = new TestViewModel()
+        //    {
+        //        //Names = new List<string>()
+        //        //{
+        //        //    "Faker", "Deft", "Dopa"
+        //        //}
 
-            return View(testViewModel);
-            //return View("Privacy");
-            //return View("Views/Shared/Error.cshtm");
-        }
+        //        Id = 1005,
+        //        Count = 2
+        //    };
+
+        //    return View(testViewModel);
+        //    //return View("Privacy");
+        //    //return View("Views/Shared/Error.cshtm");
+        //}
 
         //public IActionResult Test2(TestModel testModel)
         //{
@@ -238,6 +291,21 @@ namespace AspNetCore.Controllers
         //    return null;
         //}
 
+        [Route("Test")] //WebAPI 에서는 이방식이 좋다
+        [Route("/TestSecret")]
+        public IEnumerable<string> Test()
+        {
+            List<string> names = new List<string>()
+            {
+                "Faker","Deft", "Dopa"
+            };
+
+
+            return names;
+            
+        }
+
+        [Route("Index")]
         public IActionResult Index()
         {
             return View();

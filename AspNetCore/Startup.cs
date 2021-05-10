@@ -77,32 +77,37 @@ namespace AspNetCore
             // Route Template (Pattern)
             // name: "default" -> 다수를 설정할 수 있다!
 
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    // api : literal value(고정 문자열 값? 꼭 필요)
+            //    // {controller} {action} : route parameter (꼭필요)
+            //    // {controller=Home} {action=Index} : Optional Route patameter ( 없으면 알아서 기본값 설정)
+            //    // {id?} : Optional route parameter (없어도 됨)
+            //    // [주의!] controller랑 action 무조건 정해져야 합니다! (매칭 or 기본값을 통해서)
+
+            //    // Constraint 관련 (제약사항)
+            //    // {controller=Home}/{action=Index}/{id?}
+            //    // id가 광범위하다는 문제가 있음 /1/2/3
+            //    // {cc:int} 정수만
+            //    // {cc:min(18)} 18이상 정수만
+            //    // {cc:length(5)} 5글자 string
+
+            //    endpoints.MapControllerRoute(
+            //        name: "test",
+            //        pattern: "api/{controller}/{action}/{test?}",
+            //        defaults: new {controller = "Home", action = "Privacy"}
+                    
+            //        );
+
+            //    //라우팅 패턴 설정
+            //    endpoints.MapControllerRoute(
+            //        name: "default",
+            //        pattern: "{controller=Home}/{action=Index}/{id?}");
+            //});
+
             app.UseEndpoints(endpoints =>
             {
-                // api : literal value(고정 문자열 값? 꼭 필요)
-                // {controller} {action} : route parameter (꼭필요)
-                // {controller=Home} {action=Index} : Optional Route patameter ( 없으면 알아서 기본값 설정)
-                // {id?} : Optional route parameter (없어도 됨)
-                // [주의!] controller랑 action 무조건 정해져야 합니다! (매칭 or 기본값을 통해서)
-
-                // Constraint 관련 (제약사항)
-                // {controller=Home}/{action=Index}/{id?}
-                // id가 광범위하다는 문제가 있음 /1/2/3
-                // {cc:int} 정수만
-                // {cc:min(18)} 18이상 정수만
-                // {cc:length(5)} 5글자 string
-
-                endpoints.MapControllerRoute(
-                    name: "test",
-                    pattern: "api/{controller}/{action}/{test?}",
-                    defaults: new {controller = "Home", action = "Privacy"}
-                    
-                    );
-
-                //라우팅 패턴 설정
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
         }
     }
