@@ -221,7 +221,7 @@ namespace AspNetCore.Controllers
     // Why? REST서버를 생각해보면.
     // URL 요청 자체가 어떤 기능을 하는지, 이름에서 보다 명확하게 드러나야 좋다! (api/ranking/find)
     // Attribute Routing !
-    
+
     // 매번 중복되는 부분을 제거할 수 없을까?
     // Route Attribute를 Controller
     // Action에 붙은 Route / 이 붙으면 절대 경로, 아니면 상대 경로
@@ -234,22 +234,115 @@ namespace AspNetCore.Controllers
     // [HttpPost("주소")] = [HttpPost] + [Route("주소")]
 
     #endregion
+
+    #region Dependency Injection
+
+    // Dependency Injection ( DI 종속성 주입)
+    // 디자인 패턴에서 코드간 종속성을 줄이는 것을 중요하게 생각(Ioosely coupled)
+    // 부품에 부품이 들어가서 지저분해 보임
+    // 하나를 고치면 다른 모든게 망가진다.
+    // 종속성....
+
+    // 생성자에서 new를 해서 직접 만들어줘야하나? -> NO
+    // "인터페이스 A에 대해서 B라는 구현을 사용해
+    // 그러면 생성자에 이를 연결해주는 것은 알아서 처리됨
+
+    // 1)Request
+    // 2)Routing
+    // 3)Controller Activator( DI Container한테 Controller 생성 + 알맞는 Dependency 연결 위탁)
+    // 4)DI Container 임무 실시
+    // 5)Controller가 생성 끝!
+
+    // 만약 3번에서 요청한 Dependency를 못 찾으면 -> Error
+    // ConfigurServices에서 등록을 해야 한다!
+    // - Service Type (인터페이스 or 클래스)
+    // - Implementation Type (클래스)
+    // - LifeTime (transient, Scoped, Singleton)
+    // AddTransient, AddScoped, AddSingleton
+
+    // 원한다면 동일한 인터페이스에 대해 다수의 서비스 등록 가능
+    // IEnumerable<IBaseLogger>
+
+    // 보통 생성자에 DI를 하는게 국룰이긴 하지만
+    // 정말 원한다면 Action에도 DI가능
+    // [FromServices]를 이용
+
+    // Razor View Template에서도 서비스가 필요하다면?
+    // 이 경우 생성자를 아예 사용할 수 없으니
+    // @inject
+
+    // LifeTime
+    // DI Container에 특정 서비스를 달라고 요청하면
+    // 1) 만들어서 반환하거나
+    // 2) 있는걸 반환하거나
+    // 즉, 서비스 instance를 재사용할지 말지를 결정
+
+    // Transient (항상 새로운 서비스 Instance를 만든다. 매번 new) 1회성
+    // Scoped(Scope 동일한 요청 내에서 같음 DbContext, Authentication(인증) << 가장 일반적)
+    // Singleton( 항상 동일한 Instance를 사용) // < 수학 공식 계산기 평생유지
+    // - 웹에서의 싱글톤은 thread-safe해야함
+
+    // 당연한 얘기지만, 어떤 서비스에서 DI 부품을 사용한다면
+    // 부품들의 수명주기는 최소한 서비스의 수명주기보다는 같거나 길어야 한다!
+    // 개발 환경에서는 이를 검사하도록 체크 가능
+
+
+    #endregion
+
+    public interface IBaseLogger
+    {
+        public void Log(string log);
+    }
+
+    public class DbLogger : IBaseLogger
+    {
+        public DbLogger() { }
+
+        public void Log(string log)
+        {
+            Console.WriteLine($"Log OK {log}");
+        }
+    }
+
+    public class FileLogSettings
+    {
+        string _filename;
+        public FileLogSettings(string filename)
+        {
+            _filename = filename;
+        }
+    }
+
+    public class FileLogger : IBaseLogger
+    {
+        FileLogSettings _settings;
+        public FileLogger(FileLogSettings settings)
+        {
+            _settings = settings;
+        }
+
+        public void Log(string log)
+        {
+            Console.WriteLine($"Log OK {log}");
+        }
+    }
+
     [Route("Home")]
     //[Route("[controller]")]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        //public HomeController(ILogger<HomeController> logger)
+        //{
+        //    _logger = logger;
+        //}
 
-        [HttpPost("Post")]
-        public IActionResult PostOnly()
-        {
-            return Ok(1);
-        }
+        //[HttpPost("Post")]
+        //public IActionResult PostOnly()
+        //{
+        //    return Ok(1);
+        //}
 
         //public IActionResult BuyItem(int id, int count)
         //{
@@ -291,24 +384,37 @@ namespace AspNetCore.Controllers
         //    return null;
         //}
 
-        [Route("Test")] //WebAPI 에서는 이방식이 좋다
-        [Route("/TestSecret")]
-        public IEnumerable<string> Test()
+        //[Route("Test")] //WebAPI 에서는 이방식이 좋다
+        //[Route("/TestSecret")]
+        //public IEnumerable<string> Test()
+        //{
+        //    List<string> names = new List<string>()
+        //    {
+        //        "Faker","Deft", "Dopa"
+        //    };
+
+
+        //    return names;
+
+        //}
+
+        //IBaseLogger _logger;
+        IEnumerable<IBaseLogger> _logger;
+        public HomeController(IEnumerable<IBaseLogger> logger)
         {
-            List<string> names = new List<string>()
-            {
-                "Faker","Deft", "Dopa"
-            };
-
-
-            return names;
-            
+            _logger = logger;
         }
 
+        
+
         [Route("Index")]
+        [Route("/")]
         public IActionResult Index()
         {
-            return View();
+            //FileLogger logger = new FileLogger(new FileLogSettings("log.txt"));
+            _logger.Log("Log Test");
+
+            return Ok();
         }
 
         public IActionResult Privacy()

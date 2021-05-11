@@ -1,3 +1,4 @@
+using AspNetCore.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,6 +25,13 @@ namespace AspNetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddSingleton<IBaseLogger, FileLogger>();
+
+            services.AddSingleton(new FileLogSettings("log.txt"));
+            services.AddSingleton<IBaseLogger, DbLogger>();
+            //services.AddSingleton(sp => new FileLogSettings("log.txt"));
+
         }
         // [Request]                    [Response]
         // [파이프라인]                [파이프라인]
