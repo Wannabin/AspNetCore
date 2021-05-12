@@ -267,7 +267,7 @@ namespace AspNetCore.Controllers
     // 정말 원한다면 Action에도 DI가능
     // [FromServices]를 이용
 
-    // Razor View Template에서도 서비스가 필요하다면?
+    // Razor View Template에서도 서비스가 필요하다면? 
     // 이 경우 생성자를 아예 사용할 수 없으니
     // @inject
 
