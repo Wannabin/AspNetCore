@@ -26,10 +26,10 @@ namespace AspNetCore
         {
             services.AddControllersWithViews();
 
-            services.AddSingleton<IBaseLogger, FileLogger>();
+            //services.AddSingleton<IBaseLogger, FileLogger>();
 
-            services.AddSingleton(new FileLogSettings("log.txt"));
-            services.AddSingleton<IBaseLogger, DbLogger>();
+            //services.AddSingleton(new FileLogSettings("log.txt"));
+            //services.AddSingleton<IBaseLogger, DbLogger>();
             //services.AddSingleton(sp => new FileLogSettings("log.txt"));
 
         }

@@ -1,5 +1,6 @@
 ﻿using AspNetCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -172,7 +173,6 @@ namespace AspNetCore.Controllers
     // [!]_이 붙으면, _ViewStart가 적용되지 않는다.
 
     #endregion
-
     #region Tag Helper
 
     // Tag Helper (일종의 HTML Helper)
@@ -189,7 +189,6 @@ namespace AspNetCore.Controllers
 
 
     #endregion
-
     #region WebAPI
     // WebAPI : MVC에서 기능을 조금 제거한게 WebAPI
     // MVC의 View가 HTML을 반환하지 않고, JSON/XML 데이터를 반환하면
@@ -234,7 +233,6 @@ namespace AspNetCore.Controllers
     // [HttpPost("주소")] = [HttpPost] + [Route("주소")]
 
     #endregion
-
     #region Dependency Injection 
 
     // Dependency Injection ( DI 종속성 주입)
@@ -287,8 +285,9 @@ namespace AspNetCore.Controllers
     // 개발 환경에서는 이를 검사하도록 체크 가능
 
 
-    #endregion
 
+
+    /*
     public interface IBaseLogger
     {
         public void Log(string log);
@@ -326,9 +325,56 @@ namespace AspNetCore.Controllers
             Console.WriteLine($"Log OK {log}");
         }
     }
+    */
+    #endregion
+    #region Configuration
+    // Configuration
+    // 외부로 값을 빼서 설정
+    // 1) 설정값
+    // 2) 비밀값 (ConnectionString)
+    
+    // 대부분의 설정들은 CreateDefaultBuilder에서 발생
+    // 1) ConfigureAppConfiguration // < App Settings/ Secrets ( 이번 주제)
+    // 2) ConfigureLogging          //< Logging
+    // 3) UseDefaultServiceProvider // < DI Container 설정
+    // 4) UseKestrel                // < Kestrel
+    // 5) ConfigureServices         // < Services
+    // 6) UseIISIntergration        // IIS를 ReverseProxy 설정
+
+    // Configuration Step
+    // 1) ConfigurationBuilder를 만든다
+    // 2) 각종 ExtensionMethod를 이용해서 설정 방법을 추가
+    // -- AddJsonFile() -> JsonConfigurationProvider에 의해
+    // -- AddCommandLine() -> CommandLineProvider에 의해
+    // -- AddEnvironmentVariables() -> 환경변수
+    // - 그외) XML, Azure Key...
+    // 3) Build() 실행
+    // 4) IConfigurationRoot에 결과물 저장
+    // 5) IConfiguration
+
+    // 실제 ConfigureAppConfiguration 코드를 분석
+    // 1) JSON file provider (appsettings.json)
+    // 2) JSON file provider (appsettings.{ENV}.json)
+    // 3) UserSecrets
+    // 4) Env Variable(환경변수)
+    // 5) CommendLine
+    // 마지막에 등록하는 Provider가 덮어쓰기 때문!
+
+    // Secret : 비밀스러운 Config
+    // 비밀번호, DB ConnectionString
+    // 대안으로 환경 변수 사용을 고려할 수 있음(appsetting.json보다 후순위)
+
+    // 개발 환경이라면 UserSecrets라는 애도 있었다.
+    // 우클릭 -> 사용자 암호 관리 -> secrets.json
+
+    // Reload
+    // reloadOnChange = true
+    // 프로그램 실행중에 appsettings.json을 변경하면 바로 적용!
+
+    #endregion
 
     [Route("Home")]
-    //[Route("[controller]")]
+    
     public class HomeController : Controller
     {
         //private readonly ILogger<HomeController> _logger;
@@ -398,21 +444,27 @@ namespace AspNetCore.Controllers
 
         //}
 
-        //IBaseLogger _logger;
-        IEnumerable<IBaseLogger> _logger;
-        public HomeController(IEnumerable<IBaseLogger> logger)
-        {
-            _logger = logger;
-        }
-
         
+
+
+        public IConfiguration _configuration { get; }
+        public HomeController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         [Route("Index")]
         [Route("/")]
         public IActionResult Index()
         {
             //FileLogger logger = new FileLogger(new FileLogSettings("log.txt"));
-            _logger.Log("Log Test");
+            //_logger.Log("Log Test");
+            var test1 = _configuration["Test:Id"];
+            var test2 = _configuration["Test:Password"];
+
+            var test3 = _configuration["Logging:LogLevel:Default"];
+            var test4 = _configuration.GetSection("Logging")["LogLevel:Default"];
+            var test5 = _configuration["secret"];
 
             return Ok();
         }
