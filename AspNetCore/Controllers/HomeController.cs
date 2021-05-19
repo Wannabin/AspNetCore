@@ -329,7 +329,7 @@ namespace AspNetCore.Controllers
     #endregion
     #region Configuration
     // Configuration
-    // 외부로 값을 빼서 설정
+    // 외부로 값을 빼서 설정 
     // 1) 설정값
     // 2) 비밀값 (ConnectionString)
     
