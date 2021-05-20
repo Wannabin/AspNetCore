@@ -1,5 +1,6 @@
 ﻿using AspNetCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -332,7 +333,7 @@ namespace AspNetCore.Controllers
     // 외부로 값을 빼서 설정 
     // 1) 설정값
     // 2) 비밀값 (ConnectionString)
-    
+
     // 대부분의 설정들은 CreateDefaultBuilder에서 발생
     // 1) ConfigureAppConfiguration // < App Settings/ Secrets ( 이번 주제)
     // 2) ConfigureLogging          //< Logging
@@ -373,6 +374,91 @@ namespace AspNetCore.Controllers
 
     #endregion
 
+    #region Filter
+    // MVC Filter 파이프라인
+    // 필터링 -> 허가받은 사람들만 Action 접근
+    // ex) 로그인한 유저들에게만 보이는 기능
+    //필터가 없으면, 이런 코드를 모든 Action에 일일히 추가해야함
+
+    // 다양한 시점에 필터를 추가할 수 있음
+
+    // 1) Request
+    // 2) Routing
+    // - 필터
+    // 3) Model Binding / Validation
+    // - 필터
+    // 4) Action
+    // - 필터
+    // 5) ViewResult
+    // - 필터
+    // 6) HTML Respone
+
+    // 필터 종류
+    // 1) Authorization Filter
+    // - 권한이 있는지 확인, 가장 먼저 실행
+    // - 권한이 없으면 -> 흐름을 가로채서 바로 빠져나감
+    // 2) Resource Filter
+    // - 1번 다음으로 추가, 맨 마지막에도 가능
+    // - 공용 코드를 넣는다거나
+    // 3) Action Filter
+    // -Action 호출 전후에 처리
+    // 4) Exception Filter
+    // - 예외가 일어날 때
+    // 5) Result Filter
+    // - IActionResult 전후에 처리
+    
+    //Request               Response
+    //[Authorization]------>
+    //[Resource]            [resource]
+    //Model Binding
+    //Validation
+    //[Action]
+    //Action
+    //[Exception]---------->
+    //[Result]              [Result]
+    //          IActionResult
+
+    // 미들웨어 vs 필터
+    // 1) 방향성
+    // - 미들웨어는 항상 양방향 (In/Out)
+    // - 필터 (Resource, Action, Result 2번, 나머진 1번)
+    // 2) Request 종류
+    // - 미들웨어는 모든 Request에 대해
+    // 필터는 MVC 미들웨어와 연관된 Request에 대해서만 실행
+    // AddControllersWithViews가 담당
+    // 미들웨어는 더 일반적이고 광범위 하다
+    // 필터는 MVC 미들웨어에서 동작하는 2차 - 미들웨 정도로 이해가능
+    // 3)적용 범위
+    // 필터는 전체 / Controller /Action 적용 범위를 골라서 적용
+    // 필터는 MVC의 ModelState, IActionResults등 세부 정보에 접근 가능
+
+    // 필터 만들기
+    // - IAuthorizationFilter, IAsyncAuthorizationFilter
+    // - IResourceFilter, IAsyncResourceFilter
+
+    // Global
+    // Controller
+    // Action
+
+    #endregion
+
+    public class TestResourceFilter : Attribute, IResourceFilter
+    {
+        
+
+        public void OnResourceExecuting(ResourceExecutingContext context)
+        {
+            Console.WriteLine("Resource Executing");
+        }
+
+        public void OnResourceExecuted(ResourceExecutedContext context)
+        {
+            Console.WriteLine("Resource Executing");
+        }
+    }
+
+   
+   
     [Route("Home")]
     
     public class HomeController : Controller
@@ -444,14 +530,11 @@ namespace AspNetCore.Controllers
 
         //}
 
-        
-
-
-        public IConfiguration _configuration { get; }
-        public HomeController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //public IConfiguration _configuration { get; }
+        //public HomeController(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
         [Route("Index")]
         [Route("/")]
@@ -459,12 +542,12 @@ namespace AspNetCore.Controllers
         {
             //FileLogger logger = new FileLogger(new FileLogSettings("log.txt"));
             //_logger.Log("Log Test");
-            var test1 = _configuration["Test:Id"];
-            var test2 = _configuration["Test:Password"];
+            //var test1 = _configuration["Test:Id"];
+            //var test2 = _configuration["Test:Password"];
 
-            var test3 = _configuration["Logging:LogLevel:Default"];
-            var test4 = _configuration.GetSection("Logging")["LogLevel:Default"];
-            var test5 = _configuration["secret"];
+            //var test3 = _configuration["Logging:LogLevel:Default"];
+            //var test4 = _configuration.GetSection("Logging")["LogLevel:Default"];
+            //var test5 = _configuration["secret"];
 
             return Ok();
         }
