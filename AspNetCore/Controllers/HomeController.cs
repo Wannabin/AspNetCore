@@ -385,7 +385,7 @@ namespace AspNetCore.Controllers
     // 1) Request
     // 2) Routing
     // - 필터
-    // 3) Model Binding / Validation
+    // 3) Model Binding / Validation 
     // - 필터
     // 4) Action
     // - 필터
