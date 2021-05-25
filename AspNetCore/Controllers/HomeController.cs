@@ -373,7 +373,6 @@ namespace AspNetCore.Controllers
     // 프로그램 실행중에 appsettings.json을 변경하면 바로 적용!
 
     #endregion
-
     #region Filter
     // MVC Filter 파이프라인
     // 필터링 -> 허가받은 사람들만 Action 접근
@@ -406,7 +405,7 @@ namespace AspNetCore.Controllers
     // - 예외가 일어날 때
     // 5) Result Filter
     // - IActionResult 전후에 처리
-    
+
     //Request               Response
     //[Authorization]------>
     //[Resource]            [resource]
@@ -439,6 +438,67 @@ namespace AspNetCore.Controllers
     // Global
     // Controller
     // Action
+
+    #endregion
+    #region Authentication(인증)
+    // Authentication(인증) + Authorization(권한)
+    // 기본 용어
+    // Principal : 사용자
+    // Claim : 이메일, 이름, 생일, ADMIN 권한등 Principal에 대한 정보
+
+    // Kestrel은 Request 올때마다 HttpContext 생성
+    // HttpContext.User 를 이용해서 현재 사용자(Principal) 확인
+    // Default 상태로는 익명 + Unauthenticated + Claim 0개
+    
+    // 일반 웹서버 인증
+    // 1) 사용자가 identifier(아이디)와 secret(비밀번호) 전송
+    // 2) 웹서버에서 보내준 정보가 맞는지 확인 - DB
+    // 3) 사용자의 인증 정보 생성
+    // - 4) 쿠키 암호화된 인증 정보(Principal) 저장 
+    
+    // ASP.net Core
+    // 1)HttpContext.User = 무인증 상태의 익명 사용자 Principal
+    // 2)LoginController로 id/secret
+    // 3) SignInManager를 이용해서 DB에서 사용자 정보를 갖고오고 정보 확인
+    // 4) 정보가 맞다면 HttpContext.User = new ClaimsPrincipal 교체
+    // 5) 새 principal에 알맞는 Claim 붙여준다.
+    // -6) 사용자한테 Cookie 정보 전송
+    
+    // 영화관에 입장한다.
+    // -1) 처음 입장할 때 돈을 내고, 표를 받는다
+    // -2) 다음 입장에는 표만 보여주면 바로 입장 가능
+
+    // ASP.NET Core (일반 상황)
+    // 1) 첫 인증 때는 위의 상황을 따르고
+    // 2) Request 쿠키를 찾아서 쿠키가 정상적인지 체크
+    // 3) OK
+
+    // 문제 상황
+    // - 브라우저(Chrome) 등에 쿠키 사용 시, HTTP 요청할 때 자동으로 포함
+    // - 영화관 표를 받고, 동일 체인점의 다른 영화관에 갔다면? -> NO
+    // - 표라는 개념은 영화관 하나의 지점에서만 유효
+    // - 쿠키도 단일 도메인에서만 유효
+    // - WebAPI의 경우 기능별로 서버를 분리하는 경우가 많은데, 이럴 때 쿠키를 사용하긴 불리
+    
+    // 대안: 토큰을 이용한 인증
+    // - 영화관마다 매표소가 있는 개념이 아니라
+    // - 중앙에서 관리하는 매표소에서 표를 구매하고
+    // - 어떤 영화관을 가더라도, 해당 구매 내역 보여줌
+
+    // 인증을 직접 구현하는 것은 살짝 위험..
+    // ASP.NET Core Identity
+    // -User/ Claim에 관련된 DB 생성 관리
+    // - Password Validation
+    // - User Account Lock (BruteForce Attack) 계속 틀릴경우 잠시 막음
+    // - 2FA (Two Factor Authentication) SNS 인증
+    // - Password Reset (비번 분실 -> 임시 비번)
+    // - 3rd Party Library (Facebook, Google, 연동)
+
+    // __EFMigrationsHistory -> EF Core Migration
+    // AspNetUsers -> 말 그대로 핵심 user 정보( 매우 중요!)
+    // AspNetClaims -> User의 추가 Claim 정보
+    // AspNetUserLogins / AspNetUserTokens -> 3rd Party (Google 로그인)
+    // AspNetRoles, AspNetRoleClaims, AspNetUserRoles -> (Legacy) Role 기반의 Auth(Claim)
 
     #endregion
 
