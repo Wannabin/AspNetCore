@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -79,6 +80,19 @@ namespace IdentityCore.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    // Test
+                    var claim = new Claim("IsAdmin", Input.Email.StartsWith("admin").ToString());
+                    await _userManager.AddClaimAsync(user, claim);
+
+                    var claim2 = new Claim("Age", "21");
+                    await _userManager.AddClaimAsync(user, claim2);
+
+                    var claim3 = new Claim("IsVip", "true");
+                    await _userManager.AddClaimAsync(user, claim3);
+
+                    var claim4 = new Claim("IsBanned", "false");
+                    await _userManager.AddClaimAsync(user, claim4);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

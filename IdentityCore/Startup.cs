@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IdentityCore
@@ -34,6 +35,16 @@ namespace IdentityCore
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireClaim("IsAdmin"));
+                //options.AddPolicy("AdminPolicy", policy => policy.RequireClaim(ClaimTypes.Email,"wonbinkim91@gmail.com"));
+                //options.AddPolicy("AdminPolicy", policy => policy.RequireAuthenticatedUser());
+                //options.AddPolicy("AdminPolicy", policy => policy.RequireAssertion(
+                //    p => p.User.HasClaim(c => c.Type == ClaimTypes.Email)));
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
